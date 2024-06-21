@@ -1,16 +1,29 @@
 package com.remock.core;
 
-public class WireMockExporter {
-  private final ReMockPerHostStore perHostStore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 
+public class WireMockExporter {
+
+  private final ReMockPerHostStore perHostStore;
+  private final ObjectMapper mapper;
+
+  public WireMockExporter(ReMockPerHostStore perHostStore, ObjectMapper mapper) {
+    this.perHostStore = perHostStore;
+    this.mapper = mapper;
+  }
   public WireMockExporter(ReMockPerHostStore perHostStore) {
     this.perHostStore = perHostStore;
+    this.mapper = new ObjectMapper();
   }
 
-  public String exportJava() {
-    StringBuilder sb = new StringBuilder();
+  public List<String> exportJava() {
+    List<String> stubs = new ArrayList<>();
     perHostStore.perHostEvents().forEach((host, calls) -> {
       calls.forEach(call -> {
+        StringBuilder sb = new StringBuilder();
         sb.append("stubFor(");
         sb.append("  get(urlEqualTo(\"" + call.request().path() + "\")");
         sb.append("    .willReturn(aResponse()");
@@ -22,45 +35,33 @@ public class WireMockExporter {
         sb.append("      .withBody(\"" + call.response().body() + "\")");
         sb.append("    )");
         sb.append(");");
+        stubs.add(toString());
       });
     });
-    return sb.toString();
+    return stubs;
   }
 
-  public String exportJson() {
+  public List<String> exportJson() {
+    List<String> stubs = new ArrayList<>();
+    perHostStore.perHostEvents().forEach((host, calls) -> {
+      stubs.add(toJson(host, calls));
+    });
+
+    return stubs;
+  }
+
+  private String toJson(String host, List<ReMockCall> calls) {
     StringBuilder sb = new StringBuilder();
     sb.append("{\n");
-    perHostStore.perHostEvents().forEach((host, calls) -> {
-      sb.append("  \"" + host + "\": [\n");
-      calls.forEach(call -> {
-        sb.append("    {\n");
-        sb.append("      \"request\": {\n");
-        sb.append("        \"url\": \"" + call.request().path() + "\",\n");
-        sb.append("        \"method\": \"" + call.request().method() + "\",\n");
-        sb.append("        \"body\": \"" + call.request().body() + "\",\n");
-        sb.append("        \"contentType\": \"" + call.request().contentType() + "\",\n");
-        sb.append("        \"accept\": \"" + call.request().accept() + "\",\n");
-        sb.append("        \"headers\": {\n");
-        call.request().headers().forEach((key, value) -> {
-          sb.append("          \"" + key + "\": \"" + value + "\",\n");
-        });
-        sb.append("        },\n");
-        sb.append("        \"query\": \"" + call.request().query() + "\"\n");
-        sb.append("      },\n");
-        sb.append("      \"response\": {\n");
-        sb.append("        \"status\": " + call.response().status() + ",\n");
-        sb.append("        \"body\": \"" + call.response().body() + "\",\n");
-        sb.append("        \"contentType\": \"" + call.response().contentType() + "\",\n");
-        sb.append("        \"headers\": {\n");
-        call.response().headers().forEach((key, value) -> {
-          sb.append("          \"" + key + "\": \"" + value + "\",\n");
-        });
-        sb.append("        }\n");
-        sb.append("      }\n");
-        sb.append("    },\n");
-      });
-      sb.append("  ]\n");
-    });
+    sb.append("  \"mappings\": [\n");
+    for (ReMockCall call : calls) {
+      try {
+        sb.append(mapper.writeValueAsString(call));
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    sb.append("  ]\n");
     sb.append("}\n");
     return sb.toString();
   }
