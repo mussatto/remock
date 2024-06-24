@@ -1,7 +1,6 @@
 package com.remock.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,7 @@ class WireMockExporterTest {
 
   @Test
   void exportJsonEmpty() {
-    ReMockPerHostStore perHostStore = new ReMockPerHostStore();
+    ReMockCallsPerHost perHostStore = new ReMockCallsPerHost();
     WireMockExporter exporter = new WireMockExporter(perHostStore);
     List<String> json = exporter.exportJson();
     assertThat(json).isEmpty();
@@ -19,7 +18,7 @@ class WireMockExporterTest {
 
   @Test
   void exportJsonOneHost(){
-    ReMockPerHostStore perHostStore = new ReMockPerHostStore();
+    ReMockCallsPerHost perHostStore = new ReMockCallsPerHost();
     ReMockCall call = new ReMockCall(
         ReMockRequest.ReMockRequestBuilder.aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
         ReMockResponse.ReMockResponseBuilder.aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(
@@ -34,7 +33,7 @@ class WireMockExporterTest {
 
   @Test
   void exportJsonTwoHosts(){
-    ReMockPerHostStore perHostStore = new ReMockPerHostStore();
+    ReMockCallsPerHost perHostStore = new ReMockCallsPerHost();
     ReMockCall call1 = new ReMockCall(
         ReMockRequest.ReMockRequestBuilder.aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
         ReMockResponse.ReMockResponseBuilder.aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(

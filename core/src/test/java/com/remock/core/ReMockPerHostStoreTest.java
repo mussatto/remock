@@ -11,7 +11,7 @@ class ReMockPerHostStoreTest {
 
   @Test
   void add() {
-    ReMockPerHostStore store = new ReMockPerHostStore();
+    ReMockCallsPerHost store = new ReMockCallsPerHost();
     ReMockCall call = new ReMockCall(
         aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
         aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
@@ -23,7 +23,7 @@ class ReMockPerHostStoreTest {
 
   @Test
   void addMoreThan5(){
-    ReMockPerHostStore store = new ReMockPerHostStore();
+    ReMockCallsPerHost store = new ReMockCallsPerHost();
     for (int i = 0; i < 10; i++) {
       ReMockCall call = new ReMockCall(
           aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),

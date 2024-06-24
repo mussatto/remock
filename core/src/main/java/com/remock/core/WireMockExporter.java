@@ -7,50 +7,28 @@ import java.util.List;
 
 public class WireMockExporter {
 
-  private final ReMockPerHostStore perHostStore;
+  private final ReMockCallsPerHost perHostStore;
   private final ObjectMapper mapper;
 
-  public WireMockExporter(ReMockPerHostStore perHostStore, ObjectMapper mapper) {
+  public WireMockExporter(ReMockCallsPerHost perHostStore, ObjectMapper mapper) {
     this.perHostStore = perHostStore;
     this.mapper = mapper;
   }
-  public WireMockExporter(ReMockPerHostStore perHostStore) {
+  public WireMockExporter(ReMockCallsPerHost perHostStore) {
     this.perHostStore = perHostStore;
     this.mapper = new ObjectMapper();
   }
 
-  public List<String> exportJava() {
-    List<String> stubs = new ArrayList<>();
-    perHostStore.perHostEvents().forEach((host, calls) -> {
-      calls.forEach(call -> {
-        StringBuilder sb = new StringBuilder();
-        sb.append("stubFor(");
-        sb.append("  get(urlEqualTo(\"" + call.request().path() + "\")");
-        sb.append("    .willReturn(aResponse()");
-        sb.append("      .withStatus(" + call.response().status() + ")");
-        sb.append("      .withHeader(\"Content-Type\", \"" + call.response().contentType() + "\")");
-        call.response().headers().forEach((key, value) -> {
-          sb.append("      .withHeader(\"" + key + "\", \"" + value + "\")");
-        });
-        sb.append("      .withBody(\"" + call.response().body() + "\")");
-        sb.append("    )");
-        sb.append(");");
-        stubs.add(toString());
-      });
-    });
-    return stubs;
-  }
-
   public List<String> exportJson() {
     List<String> stubs = new ArrayList<>();
-    perHostStore.perHostEvents().forEach((host, calls) -> {
-      stubs.add(toJson(host, calls));
+    perHostStore.perHostEvents().values().forEach((calls) -> {
+      stubs.add(toJson(calls));
     });
 
     return stubs;
   }
 
-  private String toJson(String host, List<ReMockCall> calls) {
+  private String toJson(List<ReMockCall> calls) {
     StringBuilder sb = new StringBuilder();
     sb.append("{\n");
     sb.append("  \"mappings\": [\n");
