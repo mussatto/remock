@@ -37,8 +37,10 @@ public class ReMockResponseAdvice implements ResponseBodyAdvice<Object> {
     if (request instanceof ServletServerHttpRequest servletServerHttpRequest) {
       ReMockCall call = (ReMockCall) servletServerHttpRequest.getServletRequest()
           .getAttribute(MYMOCK_CALL);
-      call.getResponse().setBody(body.toString());
-      reMockPerHostStore.add(call);
+      if(call != null) {
+        call.getResponse().setBody(body.toString());
+        reMockPerHostStore.add(call);
+      }
     }
 
     return body;

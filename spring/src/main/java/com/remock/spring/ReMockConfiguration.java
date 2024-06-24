@@ -5,8 +5,9 @@ import com.remock.core.WireMockExporter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+
 
 @Configuration
 public class ReMockConfiguration implements WebMvcConfigurer {
@@ -18,7 +19,7 @@ public class ReMockConfiguration implements WebMvcConfigurer {
 
   public ReMockConfiguration(@Value("${remock.enabled:true}") boolean enabled,
       @Value("${remock.callsPerHost:5}") int callsPerHost,
-      @Value("${remock.pathsToIntercept:/api/**}") String pathsToIntercept,
+      @Value("${remock.pathsToIntercept:/api/*}") String pathsToIntercept,
       @Value("${remock.pathsToIgnore:/remock/stubs}") String pathsToIgnore) {
     this.enabled = enabled;
     this.callsPerHost = callsPerHost;
@@ -32,8 +33,13 @@ public class ReMockConfiguration implements WebMvcConfigurer {
   }
 
   @Bean
-  public ControllerInterceptor controllerInterceptor() {
-    return new ControllerInterceptor();
+  public ControllerInterceptor controllerInterceptor(ReMockCallsPerHost reMockCallsPerHost) {
+    return new ControllerInterceptor(reMockCallsPerHost);
+  }
+
+  @Bean
+  public ReMockRequestAdvice reMockRequestAdvice() {
+    return new ReMockRequestAdvice();
   }
 
   @Bean
