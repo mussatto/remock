@@ -5,32 +5,55 @@ import static com.remock.core.ReMockResponse.ReMockResponseBuilder.aReMockRespon
 
 import com.remock.core.ReMockCall;
 import com.remock.core.ReMockCallsPerHost;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
-public class ControllerInterceptor implements HandlerInterceptor {
+public class RemockFilter extends OncePerRequestFilter {
 
-  public static final String MYMOCK_CALL = "mymock-call";
   private final ReMockCallsPerHost reMockPerHostStore;
+  private final String pathsToIntercept;
+  private final String pathsToIgnore;
 
-  public ControllerInterceptor(ReMockCallsPerHost reMockPerHostStore) {
+  public RemockFilter(ReMockCallsPerHost reMockPerHostStore, String pathsToIntercept,
+      String pathsToIgnore) {
     this.reMockPerHostStore = reMockPerHostStore;
+    this.pathsToIntercept = pathsToIntercept;
+    this.pathsToIgnore = pathsToIgnore;
   }
 
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-      throws Exception {
-    reMockPerHostStore.add(createReMockCall(request, response));
-    return true;
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
+
+    if (request.getRequestURI().contains(pathsToIgnore)) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    if (request.getRequestURI().contains(pathsToIntercept)) {
+      ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
+      ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+      filterChain.doFilter(requestWrapper, responseWrapper);
+
+      reMockPerHostStore.add(createReMockCall(requestWrapper, responseWrapper));
+      responseWrapper.copyBodyToResponse();
+      return;
+    }
+
+    filterChain.doFilter(request, response);
   }
 
-  private ReMockCall createReMockCall(HttpServletRequest request,
-      HttpServletResponse response)
+  private ReMockCall createReMockCall(ContentCachingRequestWrapper request,
+      ContentCachingResponseWrapper response)
       throws IOException {
 
     Map<String, String> requestHeaders = Collections.list(request.getHeaderNames())
@@ -46,7 +69,7 @@ public class ControllerInterceptor implements HandlerInterceptor {
         .withAccept(request.getHeader("Accept") == null ? "" : request.getHeader("Accept"))
         .withContentType(request.getContentType() != null ? request.getContentType() : "")
         .withHeaders(requestHeaders)
-        .withBody("")
+        .withBody(request.getContentAsString())
         .build();
 
     Map<String, String> responseHeaders = response.getHeaderNames()
@@ -55,11 +78,10 @@ public class ControllerInterceptor implements HandlerInterceptor {
     var remockResponse = aReMockResponse()
         .withStatus(response.getStatus())
         .withHeaders(responseHeaders)
-        .withBody("")
+        .withBody(new String(response.getContentAsByteArray()))
         .withContentType(response.getContentType() != null ? response.getContentType() : "")
         .build();
 
     return new ReMockCall(remockRequest, remockResponse);
   }
-
 }

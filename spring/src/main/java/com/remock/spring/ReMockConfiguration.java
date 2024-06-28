@@ -19,32 +19,16 @@ public class ReMockConfiguration implements WebMvcConfigurer {
 
   public ReMockConfiguration(@Value("${remock.enabled:true}") boolean enabled,
       @Value("${remock.callsPerHost:5}") int callsPerHost,
-      @Value("${remock.pathsToIntercept:/api/*}") String pathsToIntercept,
+      @Value("${remock.pathsToIntercept:/api/}") String pathsToIntercept,
       @Value("${remock.pathsToIgnore:/remock/stubs}") String pathsToIgnore) {
     this.enabled = enabled;
     this.callsPerHost = callsPerHost;
     this.pathsToIntercept = pathsToIntercept;
     this.pathsToIgnore = pathsToIgnore;
   }
-
   @Bean
-  public ReMockConfigurer reMockConfigurer(ControllerInterceptor controllerInterceptor) {
-    return new ReMockConfigurer(controllerInterceptor, pathsToIntercept, pathsToIgnore);
-  }
-
-  @Bean
-  public ControllerInterceptor controllerInterceptor(ReMockCallsPerHost reMockCallsPerHost) {
-    return new ControllerInterceptor(reMockCallsPerHost);
-  }
-
-  @Bean
-  public ReMockRequestAdvice reMockRequestAdvice() {
-    return new ReMockRequestAdvice();
-  }
-
-  @Bean
-  public ReMockResponseAdvice reMockResponseAdvice(ReMockCallsPerHost reMockCallsPerHost) {
-    return new ReMockResponseAdvice(reMockCallsPerHost);
+  public RemockFilter remockFilter(ReMockCallsPerHost reMockCallsPerHost) {
+    return new RemockFilter(reMockCallsPerHost, pathsToIntercept, pathsToIgnore);
   }
 
   @Bean
