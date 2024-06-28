@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,7 +28,13 @@ public class StubsControllerIntegrationTest {
 
     mockMvc.perform(get("/remock/stubs"))
         .andExpect(status().isOk())
-        .andExpect(content().string("[{\"request\":{\"url\":\"/my-endpoint\"},\"response\":{\"status\":200,\"body\":\"Hello, World!\"}}]"));
+        .andExpect(content().string("""
+            {
+              "mappings": [
+            {"request":{"host":"localhost","path":"/api/my-endpoint","method":"POST","body":"{ \\"myParam\\" : \\"World\\" }","contentType":"application/json","accept":"","headers":{"Content-Length":"23","Content-Type":"application/json;charset=UTF-8"},"query":""},"response":{"body":"{\\"response\\":\\"Hello, World\\"}","contentType":"application/json","headers":{"Content-Type":"application/json;charset=UTF-8"}}}  ]
+            }
+            """));
+    
   }
 
 }
