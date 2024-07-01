@@ -34,7 +34,7 @@ public class StubsControllerIntegrationTest {
             {"request":{"host":"localhost","path":"/api/my-endpoint","method":"POST","body":"{ \\"myParam\\" : \\"World\\" }","contentType":"application/json","accept":"","headers":{"Content-Length":"23","Content-Type":"application/json;charset=UTF-8"},"query":""},"response":{"body":"{\\"response\\":\\"Hello, World\\"}","contentType":"application/json","headers":{"Content-Type":"application/json;charset=UTF-8"}}}  ]
             }
             """));
-    
+
   }
 
 }
