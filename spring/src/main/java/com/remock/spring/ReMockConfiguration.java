@@ -32,12 +32,12 @@ public class ReMockConfiguration implements WebMvcConfigurer {
 
   @Bean
   public ReMockCallsPerHost reMockCallsPerHost() {
-    return new ReMockCallsPerHost(callsPerHost);
+    return new ReMockCallsPerHost(callsPerHost, callsPerHost);
   }
 
   @Bean
-  public WireMockExporter wireMockExporter() {
-    return new WireMockExporter(new ReMockCallsPerHost(callsPerHost));
+  public WireMockExporter wireMockExporter(ReMockCallsPerHost reMockCallsPerHost) {
+    return new WireMockExporter(reMockCallsPerHost);
   }
 
   @Bean

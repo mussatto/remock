@@ -13,4 +13,10 @@ public class ReMockTestController {
   public Map<String, String> myEndpoint(@RequestBody Map<String, String> params) {
     return Map.of("response", "Hello, " + params.get("myParam"));
   }
+
+  @PostMapping(value = "/api/my-endpoint-2",
+      produces = "application/json")
+  public Map<String, String> myEndpoint2(@RequestBody Map<String, String> params) {
+    return Map.of("response", "Hello, " + params.get("myParam"));
+  }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class WireMockExporter {
 
@@ -19,13 +20,14 @@ public class WireMockExporter {
     this.mapper = new ObjectMapper();
   }
 
-  public List<String> exportJson() {
-    List<String> stubs = new ArrayList<>();
-    perHostStore.perHostEvents().values().forEach((calls) -> {
-      stubs.add(toJson(calls));
-    });
-
-    return stubs;
+  public String exportJson() {
+    ReMockCallList callList = new ReMockCallList(new ArrayList<>());
+    perHostStore.perHostEvents().values().stream().map(Map::values).forEach(it -> it.forEach(callList.mappings()::addAll));
+    try {
+      return mapper.writeValueAsString(callList);
+    } catch (JsonProcessingException e) {
+      return "";
+    }
   }
 
   private String toJson(List<ReMockCall> calls) {

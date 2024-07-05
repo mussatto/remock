@@ -8,6 +8,12 @@ public class ReMockResponse {
   private String contentType;
   private Map<String, String> headers;
 
+  public ReMockResponse() {
+    this.body = null;
+    this.contentType = null;
+    this.headers = null;
+  }
+
   public ReMockResponse(String body, String contentType, Map<String, String> headers, int status) {
     if (body == null || contentType == null || headers == null) {
       throw new IllegalArgumentException("All fields must be non-null");

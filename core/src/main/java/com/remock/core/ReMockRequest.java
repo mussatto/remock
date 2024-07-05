@@ -13,6 +13,16 @@ public class ReMockRequest{
     private Map<String, String> headers;
     private String query;
 
+    public ReMockRequest() {
+        this.host = null;
+        this.path = null;
+        this.method = null;
+        this.body = null;
+        this.contentType = null;
+        this.accept = null;
+        this.headers = null;
+        this.query = null;
+    }
     public ReMockRequest(String host, String path, String method, String body, String contentType, String accept, Map<String, String> headers, String query)  {
         if (host == null || path == null || method == null || body == null || contentType == null || accept == null || headers == null || query == null) {
             throw new IllegalArgumentException("All fields must be non-null");
