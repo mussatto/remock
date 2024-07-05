@@ -9,6 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.remock.core.ReMockCallList;
+import com.remock.core.ReMockCallsPerHost;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,6 +28,13 @@ public class StubsControllerIntegrationTest {
   @Autowired
   private ObjectMapper objectMapper;
 
+  @Autowired
+  private ReMockCallsPerHost reMockCallsPerHost;
+
+  @BeforeEach
+  public void setup() {
+    reMockCallsPerHost.perHostEvents().clear();
+  }
   @Test
   public void testGetStubs() throws Exception {
 

@@ -1,5 +1,6 @@
 plugins {
     java
+    `maven-publish`
 }
 
 java {
@@ -35,4 +36,44 @@ tasks.test {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+
+            // Optional: Customize the generated POM
+            pom {
+                name.set("remock.core")
+                description.set("A library for generating mock objects")
+                url.set("http://www.github.com/mussatto/remock")
+
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("mussatto")
+                        name.set("Vitor Mussatto")
+                        email.set("mussatto@gmail.com")
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/mussatto/remock")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.token") as String? ?: System.getenv("TOKEN")
+            }
+        }
+    }
 }
