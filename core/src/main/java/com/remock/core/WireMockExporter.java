@@ -30,20 +30,4 @@ public class WireMockExporter {
     }
   }
 
-  private String toJson(List<ReMockCall> calls) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("{\n");
-    sb.append("  \"mappings\": [\n");
-    for (ReMockCall call : calls) {
-      try {
-        sb.append(mapper.writeValueAsString(call));
-      } catch (JsonProcessingException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    sb.append("  ]\n");
-    sb.append("}\n");
-    return sb.toString();
-  }
-
 }
