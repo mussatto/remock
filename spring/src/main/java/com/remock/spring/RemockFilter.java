@@ -3,6 +3,7 @@ package com.remock.spring;
 import static com.remock.core.ReMockRequest.ReMockRequestBuilder.aReMockRequest;
 import static com.remock.core.ReMockResponse.ReMockResponseBuilder.aReMockResponse;
 
+import com.remock.core.CallStorage;
 import com.remock.core.ReMockCall;
 import com.remock.core.ReMockCallsPerHost;
 import jakarta.servlet.FilterChain;
@@ -19,13 +20,13 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 public class RemockFilter extends OncePerRequestFilter {
 
-  private final ReMockCallsPerHost reMockPerHostStore;
+  private final CallStorage callStorage;
   private final String pathsToIntercept;
   private final String pathsToIgnore;
 
-  public RemockFilter(ReMockCallsPerHost reMockPerHostStore, String pathsToIntercept,
+  public RemockFilter(CallStorage callStorage, String pathsToIntercept,
       String pathsToIgnore) {
-    this.reMockPerHostStore = reMockPerHostStore;
+    this.callStorage = callStorage;
     this.pathsToIntercept = pathsToIntercept;
     this.pathsToIgnore = pathsToIgnore;
   }
@@ -44,7 +45,7 @@ public class RemockFilter extends OncePerRequestFilter {
       ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
       filterChain.doFilter(requestWrapper, responseWrapper);
 
-      reMockPerHostStore.add(createReMockCall(requestWrapper, responseWrapper));
+      callStorage.add(createReMockCall(requestWrapper, responseWrapper));
       responseWrapper.copyBodyToResponse();
       return;
     }
@@ -53,8 +54,7 @@ public class RemockFilter extends OncePerRequestFilter {
   }
 
   private ReMockCall createReMockCall(ContentCachingRequestWrapper request,
-      ContentCachingResponseWrapper response)
-      throws IOException {
+      ContentCachingResponseWrapper response) {
 
     Map<String, String> requestHeaders = Collections.list(request.getHeaderNames())
         .stream()

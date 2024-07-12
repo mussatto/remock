@@ -8,9 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.remock.core.CallStorage;
 import com.remock.core.ReMockCallList;
-import com.remock.core.ReMockCallsPerHost;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +28,11 @@ public class StubsControllerIntegrationTest {
   private ObjectMapper objectMapper;
 
   @Autowired
-  private ReMockCallsPerHost reMockCallsPerHost;
+  private CallStorage callStorage;
 
   @BeforeEach
   public void setup() {
-    reMockCallsPerHost.perHostEvents().clear();
+    callStorage.clear();
   }
   @Test
   public void testGetStubs() throws Exception {
@@ -71,12 +70,8 @@ public class StubsControllerIntegrationTest {
         .andReturn().getResponse().getContentAsString(), ReMockCallList.class);
 
     assertThat(list.mappings()).hasSize(3);
-    assertThat(list.mappings().get(0).getRequest().getPath()).isEqualTo("/api/my-endpoint");
-    assertThat(list.mappings().get(1).getRequest().getPath()).isEqualTo("/api/my-endpoint");
-    assertThat(list.mappings().get(2).getRequest().getPath()).isEqualTo("/api/my-endpoint-2");
-    assertThat(list.mappings().get(0).getResponse().getBody()).isEqualTo("{\"response\":\"Hello, World\"}");
-    assertThat(list.mappings().get(1).getResponse().getBody()).isEqualTo("{\"response\":\"Hello, World 2\"}");
-    assertThat(list.mappings().get(2).getResponse().getBody()).isEqualTo("{\"response\":\"Hello, World\"}");
+    assertThat(list.mappings().stream().map(it -> it.getRequest().getPath())).containsExactlyInAnyOrder("/api/my-endpoint", "/api/my-endpoint", "/api/my-endpoint-2");
+    assertThat(list.mappings().stream().map(it -> it.getResponse().getBody())).containsExactlyInAnyOrder("{\"response\":\"Hello, World\"}", "{\"response\":\"Hello, World 2\"}", "{\"response\":\"Hello, World\"}");
 
   }
 

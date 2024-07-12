@@ -1,6 +1,8 @@
 package com.remock.spring;
 
+import com.remock.core.CallStorage;
 import com.remock.core.ReMockCallsPerHost;
+import com.remock.core.ReMockCallsPerHostMethod;
 import com.remock.core.WireMockExporter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,18 +28,18 @@ public class ReMockConfiguration implements WebMvcConfigurer {
 
   @ConditionalOnProperty(value = "remock.enabled", havingValue = "true", matchIfMissing = true)
   @Bean
-  public RemockFilter remockFilter(ReMockCallsPerHost reMockCallsPerHost) {
-    return new RemockFilter(reMockCallsPerHost, pathsToIntercept, pathsToIgnore);
+  public RemockFilter remockFilter(CallStorage callStorage) {
+    return new RemockFilter(callStorage, pathsToIntercept, pathsToIgnore);
   }
 
   @Bean
-  public ReMockCallsPerHost reMockCallsPerHost() {
-    return new ReMockCallsPerHost(callsPerHost, callsPerHost);
+  public CallStorage callStorage() {
+    return new ReMockCallsPerHostMethod(callsPerHost, callsPerHost);
   }
 
   @Bean
-  public WireMockExporter wireMockExporter(ReMockCallsPerHost reMockCallsPerHost) {
-    return new WireMockExporter(reMockCallsPerHost);
+  public WireMockExporter wireMockExporter(ReMockCallsPerHostMethod reMockCallsPerHostMethod) {
+    return new WireMockExporter(reMockCallsPerHostMethod);
   }
 
   @Bean

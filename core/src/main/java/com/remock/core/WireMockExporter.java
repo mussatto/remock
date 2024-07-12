@@ -8,21 +8,21 @@ import java.util.Map;
 
 public class WireMockExporter {
 
-  private final ReMockCallsPerHost perHostStore;
+  private final CallStorage callStorage;
   private final ObjectMapper mapper;
 
-  public WireMockExporter(ReMockCallsPerHost perHostStore, ObjectMapper mapper) {
-    this.perHostStore = perHostStore;
+  public WireMockExporter(CallStorage callStorage, ObjectMapper mapper) {
+    this.callStorage = callStorage;
     this.mapper = mapper;
   }
-  public WireMockExporter(ReMockCallsPerHost perHostStore) {
-    this.perHostStore = perHostStore;
+  public WireMockExporter(CallStorage callStorage) {
+    this.callStorage = callStorage;
     this.mapper = new ObjectMapper();
   }
 
   public String exportJson() {
-    ReMockCallList callList = new ReMockCallList(new ArrayList<>());
-    perHostStore.perHostEvents().values().stream().map(Map::values).forEach(it -> it.forEach(callList.mappings()::addAll));
+    ReMockCallList callList = callStorage.getCallList();
+
     try {
       return mapper.writeValueAsString(callList);
     } catch (JsonProcessingException e) {
