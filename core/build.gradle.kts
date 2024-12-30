@@ -71,8 +71,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/mussatto/remock")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.token") as String? ?: System.getenv("TOKEN")
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GH_USERNAME")
+                password = project.findProperty("gpr.token") as String? ?: System.getenv("GH_TOKEN")
             }
         }
     }

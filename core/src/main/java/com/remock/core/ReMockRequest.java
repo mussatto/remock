@@ -5,34 +5,31 @@ import java.util.Map;
 public class ReMockRequest{
 
     private String host;
-    private String path;
+    private String url;
     private String method;
     private String body;
     private String contentType;
-    private String accept;
     private Map<String, String> headers;
     private String query;
 
     public ReMockRequest() {
         this.host = null;
-        this.path = null;
+        this.url = null;
         this.method = null;
         this.body = null;
         this.contentType = null;
-        this.accept = null;
         this.headers = null;
         this.query = null;
     }
-    public ReMockRequest(String host, String path, String method, String body, String contentType, String accept, Map<String, String> headers, String query)  {
-        if (host == null || path == null || method == null || body == null || contentType == null || accept == null || headers == null || query == null) {
+    public ReMockRequest(String host, String url, String method, String body, String contentType, Map<String, String> headers, String query)  {
+        if (host == null || url == null || method == null || body == null || contentType == null || headers == null || query == null) {
             throw new IllegalArgumentException("All fields must be non-null");
         }
         this.host = host;
-        this.path = path;
+        this.url = url;
         this.method = method;
         this.body = body;
         this.contentType = contentType;
-        this.accept = accept;
         this.headers = headers;
         this.query = query;
     }
@@ -45,12 +42,12 @@ public class ReMockRequest{
         this.host = host;
     }
 
-    public String getPath() {
-        return path;
+    public String getUrl() {
+        return url;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getMethod() {
@@ -77,14 +74,6 @@ public class ReMockRequest{
         this.contentType = contentType;
     }
 
-    public String getAccept() {
-        return accept;
-    }
-
-    public void setAccept(String accept) {
-        this.accept = accept;
-    }
-
     public Map<String, String> getHeaders() {
         return headers;
     }
@@ -108,7 +97,6 @@ public class ReMockRequest{
         private String method;
         private String body;
         private String contentType;
-        private String accept;
         private Map<String, String> headers;
         private String query;
 
@@ -144,11 +132,6 @@ public class ReMockRequest{
             return this;
         }
 
-        public ReMockRequestBuilder withAccept(String accept) {
-            this.accept = accept;
-            return this;
-        }
-
         public ReMockRequestBuilder withHeaders(Map<String, String> headers) {
             this.headers = headers;
             return this;
@@ -160,7 +143,7 @@ public class ReMockRequest{
         }
 
         public ReMockRequest build() {
-            return new ReMockRequest(host, path, method, body, contentType, accept, headers, query);
+            return new ReMockRequest(host, path, method, body, contentType, headers, query);
         }
     }
 }

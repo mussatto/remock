@@ -14,7 +14,7 @@ class ReMockPerHostStoreMethodTest {
   void add() {
     ReMockCallsPerHostMethod store = new ReMockCallsPerHostMethod();
     ReMockCall call = new ReMockCall(
-        aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+        aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
         aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
     );
     store.add(call);
@@ -28,12 +28,12 @@ class ReMockPerHostStoreMethodTest {
     ReMockCallsPerHostMethod store = new ReMockCallsPerHostMethod();
     for (int i = 0; i < 10; i++) {
       ReMockCall call = new ReMockCall(
-          aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       );
 
       ReMockCall call2 = new ReMockCall(
-          aReMockRequest().withHost("example.com").withPath("/other").withMethod("POST").withBody("body").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.com").withPath("/other").withMethod("POST").withBody("body").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       );
       store.add(call);
@@ -51,19 +51,19 @@ class ReMockPerHostStoreMethodTest {
     for (int i = 0; i < 10; i++) {
 
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.com").withPath("/other").withMethod("POST").withBody("body").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.com").withPath("/other").withMethod("POST").withBody("body").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.org").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.org").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.org").withPath("/other").withMethod("POST").withBody("body").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.org").withPath("/other").withMethod("POST").withBody("body").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
     }
@@ -81,35 +81,35 @@ class ReMockPerHostStoreMethodTest {
     for (int i = 0; i < 10; i++) {
 
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.com").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.com").withPath("/").withMethod("POST").withBody("body").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.com").withPath("/").withMethod("POST").withBody("body").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.com").withPath("/other").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.com").withPath("/other").withMethod("GET").withBody("").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.com").withPath("/other").withMethod("POST").withBody("body").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.com").withPath("/other").withMethod("POST").withBody("body").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.org").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.org").withPath("/").withMethod("GET").withBody("").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.org").withPath("/").withMethod("POST").withBody("").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.org").withPath("/").withMethod("POST").withBody("").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.org").withPath("/other").withMethod("GET").withBody("body").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.org").withPath("/other").withMethod("GET").withBody("body").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
       store.add(new ReMockCall(
-          aReMockRequest().withHost("example.org").withPath("/other").withMethod("POST").withBody("body").withContentType("text/plain").withAccept("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
+          aReMockRequest().withHost("example.org").withPath("/other").withMethod("POST").withBody("body").withContentType("text/plain").withHeaders(Map.of("header", "value")).withQuery("any").build(),
           aReMockResponse().withBody("any").withContentType("text/plain").withHeaders(Map.of("header", "value")).withStatus(200).build()
       ));
 

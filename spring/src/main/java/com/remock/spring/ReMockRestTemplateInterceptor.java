@@ -33,13 +33,10 @@ public class ReMockRestTemplateInterceptor implements ClientHttpRequestIntercept
   private ReMockCall createReMockCall(HttpRequest request, ClientHttpResponse response, byte[] requestBody)
       throws IOException {
     ReMockRequest remockRequest = aReMockRequest()
-        .withHost(request.getURI().getHost())
         .withPath(request.getURI().getPath())
         .withMethod(request.getMethod().name())
         .withHeaders(request.getHeaders().toSingleValueMap())
         .withQuery(request.getURI().getQuery())
-        .withContentType(request.getHeaders().getContentType().toString())
-        .withAccept(request.getHeaders().getAccept().toString())
         .withBody(new String(requestBody))
         .build();
 

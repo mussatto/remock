@@ -34,7 +34,7 @@ public class ReMockCallsPerHostMethod implements CallStorage {
       calls = new HashMap<>();
       perHostEvents.put(call.getRequest().getHost(), calls);
     }
-    var key = new HostPathKey(call.getRequest().getHost(), call.getRequest().getPath(),
+    var key = new HostPathKey(call.getRequest().getHost(), call.getRequest().getUrl(),
         call.getRequest().getMethod());
     if (calls.size() > maxPerHost || (calls.get(key) != null
         && calls.get(key).size() >= maxPerEndpoint)) {

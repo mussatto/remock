@@ -5,13 +5,15 @@ import static com.remock.core.ReMockResponse.ReMockResponseBuilder.aReMockRespon
 
 import com.remock.core.CallStorage;
 import com.remock.core.ReMockCall;
-import com.remock.core.ReMockCallsPerHost;
+import com.remock.core.ReMockRequest;
+import com.remock.core.ReMockResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,12 +25,15 @@ public class RemockFilter extends OncePerRequestFilter {
   private final CallStorage callStorage;
   private final String pathsToIntercept;
   private final String pathsToIgnore;
+  private final List<String> includeHeaders;
 
   public RemockFilter(CallStorage callStorage, String pathsToIntercept,
-      String pathsToIgnore) {
+      String pathsToIgnore,
+      List<String> includeHeaders) {
     this.callStorage = callStorage;
     this.pathsToIntercept = pathsToIntercept;
     this.pathsToIgnore = pathsToIgnore;
+    this.includeHeaders = includeHeaders;
   }
 
   @Override
@@ -41,8 +46,8 @@ public class RemockFilter extends OncePerRequestFilter {
     }
 
     if (request.getRequestURI().contains(pathsToIntercept)) {
-      ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
-      ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+      var requestWrapper = new ContentCachingRequestWrapper(request);
+      var responseWrapper = new ContentCachingResponseWrapper(response);
       filterChain.doFilter(requestWrapper, responseWrapper);
 
       callStorage.add(createReMockCall(requestWrapper, responseWrapper));
@@ -56,32 +61,41 @@ public class RemockFilter extends OncePerRequestFilter {
   private ReMockCall createReMockCall(ContentCachingRequestWrapper request,
       ContentCachingResponseWrapper response) {
 
+    var remockRequest = getReMockRequest(request);
+    var remockResponse = getReMockResponse(response);
+
+    return new ReMockCall(remockRequest, remockResponse);
+  }
+
+  private ReMockRequest getReMockRequest(ContentCachingRequestWrapper request) {
     Map<String, String> requestHeaders = Collections.list(request.getHeaderNames())
         .stream()
+        .filter(h -> includeHeaders.isEmpty() || includeHeaders.contains(h))
         .collect(Collectors.toMap(h -> h, request::getHeader));
 
-    var remockRequest = aReMockRequest()
+    return aReMockRequest()
         .withHost(
             request.getRemoteHost() != null ? request.getRemoteHost() : request.getRemoteAddr())
         .withMethod(request.getMethod() != null ? request.getMethod() : "")
         .withPath(request.getRequestURI() != null ? request.getRequestURI() : "")
         .withQuery(request.getQueryString() != null ? request.getQueryString() : "")
-        .withAccept(request.getHeader("Accept") == null ? "" : request.getHeader("Accept"))
         .withContentType(request.getContentType() != null ? request.getContentType() : "")
         .withHeaders(requestHeaders)
         .withBody(request.getContentAsString())
         .build();
+  }
 
-    Map<String, String> responseHeaders = response.getHeaderNames()
+  private ReMockResponse getReMockResponse(ContentCachingResponseWrapper response) {
+    Map<String, String> responseHeaders = !response.getHeaderNames().isEmpty() ? response.getHeaderNames()
         .stream()
-        .collect(Collectors.toMap(h -> h, request::getHeader));
-    var remockResponse = aReMockResponse()
+        .filter(h -> includeHeaders.isEmpty() || includeHeaders.contains(h))
+        .collect(Collectors.toMap(h -> h, response::getHeader)) : Collections.emptyMap();
+
+    return aReMockResponse()
         .withStatus(response.getStatus())
         .withHeaders(responseHeaders)
         .withBody(new String(response.getContentAsByteArray()))
         .withContentType(response.getContentType() != null ? response.getContentType() : "")
         .build();
-
-    return new ReMockCall(remockRequest, remockResponse);
   }
 }

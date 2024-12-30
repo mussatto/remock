@@ -20,14 +20,12 @@ repositories {
 
 dependencies {
     implementation(project(":core"))
-    implementation("org.springframework:spring-web:6.1.8")
-    implementation("org.springframework.boot:spring-boot-starter-web:3.2.6")
-    implementation("org.springframework:spring-webmvc:6.1.8")
+    implementation("org.springframework:spring-web:6.2.1")
+    implementation("org.springframework:spring-webmvc:6.2.1")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.assertj:assertj-core:3.26.0")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.6")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testImplementation("org.springframework.boot:spring-boot-starter-web:3.4.1")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.1")
 }
 
 tasks.withType<JavaCompile> {
@@ -78,8 +76,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/mussatto/remock")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.token") as String? ?: System.getenv("TOKEN")
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GH_USERNAME")
+                password = project.findProperty("gpr.token") as String? ?: System.getenv("GH_TOKEN")
             }
         }
     }

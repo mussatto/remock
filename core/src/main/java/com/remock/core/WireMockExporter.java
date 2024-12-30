@@ -1,10 +1,14 @@
 package com.remock.core;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class WireMockExporter {
 
@@ -18,16 +22,30 @@ public class WireMockExporter {
   public WireMockExporter(CallStorage callStorage) {
     this.callStorage = callStorage;
     this.mapper = new ObjectMapper();
+    this.mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
   }
 
-  public String exportJson() {
-    ReMockCallList callList = callStorage.getCallList();
+  public ByteArrayOutputStream exportJsonZip() {
+    var stubs = new ReMockToWiremockMapper(callStorage.getCallList()).map();
 
-    try {
-      return mapper.writeValueAsString(callList);
-    } catch (JsonProcessingException e) {
-      return "";
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    try(ZipOutputStream zos = new ZipOutputStream(byteArrayOutputStream)) {
+
+      for(StubMapping stub : stubs) {
+        try {
+          String json = mapper.writeValueAsString(stub);
+          var zipEntry = new ZipEntry(UUID.randomUUID() + ".json");
+          zos.putNextEntry(zipEntry);
+          zos.write(json.getBytes());
+          zos.closeEntry();
+        } catch (JsonProcessingException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
+    return byteArrayOutputStream;
   }
 
 }
